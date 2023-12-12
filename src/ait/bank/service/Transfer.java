@@ -19,21 +19,38 @@ public class Transfer implements Runnable {
     }
 
     private void transferMoney(Account accFrom, Account accTo, int sum) {
-        synchronized (accFrom) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if (accFrom.getAccNumber() < accTo.getAccNumber()) {
+            synchronized (accFrom) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                synchronized (accTo) {
+                    if (accFrom.getBalance() >= sum) {
+                        accFrom.debit(sum);
+                        accTo.credit(sum);
+                    }
+                }
             }
+        } else {
             synchronized (accTo) {
-                if (accFrom.getBalance() >= sum) {
-                    accFrom.debit(sum);
-                    accTo.credit(sum);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                synchronized (accFrom) {
+                    if (accFrom.getBalance() >= sum) {
+                        accFrom.debit(sum);
+                        accTo.credit(sum);
+                    }
                 }
             }
         }
 
     }
-}
 
+}
